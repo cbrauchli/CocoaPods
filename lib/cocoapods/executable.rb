@@ -63,8 +63,12 @@ module Pod
       end
 
       options = { :stdout => stdout, :stderr => stderr, :status => true }
+      UI.message("About to Open4.spawn") if Config.instance.verbose?
       status  = Open4.spawn(full_command, options)
+      UI.message("Open4.spawn complete; status #{status}") if Config.instance.verbose?
       output  = stdout.join("\n") + stderr.join("\n")
+      UI.message("    stdout: #{stdout}") if Config.instance.verbose?
+      UI.message("    stderr: #{stderr}") if Config.instance.verbose?
       unless status.success?
         if raise_on_failure
           raise Informative, "#{full_command}\n\n#{output}"
