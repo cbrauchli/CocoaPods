@@ -49,7 +49,7 @@ module Pod
     #
     def self.execute_command(executable, command, raise_on_failure)
       bin = `which #{executable}`.strip
-      bin = `xcodebuild -find-executable git` if executable.to_s == 'git'
+      bin = `xcodebuild -find-executable git`.strip if executable.to_s == 'git'
       raise Informative, "Unable to locate the executable `#{executable}`" if bin.empty?
 
       require 'open4'
