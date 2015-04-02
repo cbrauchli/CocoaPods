@@ -4,16 +4,13 @@ To install or update CocoaPods see this [guide](http://docs.cocoapods.org/guides
 
 To install release candidates run `[sudo] gem install cocoapods --pre`
 
-## 0.36.4
+## Master
 
 ##### Bug Fixes
 
-* Fixes various problems with Pods that use xcasset bundles. Pods that
-  use xcassets can now be used with the `pod :path` option.  
-  [Kyle Fuller](https://github.com/kylef)
-  [#1549](https://github.com/CocoaPods/CocoaPods/issues/1549)
-  [#3384](https://github.com/CocoaPods/CocoaPods/pull/3383)
-  [#3358](https://github.com/CocoaPods/CocoaPods/pull/3358)
+* Do not pass code-sign arguments to xcodebuild when linting OS X targets.  
+  [Boris Bügling](https://github.com/neonichu)
+  [#3310](https://github.com/CocoaPods/CocoaPods/issues/3310)
 
 
 ## 0.36.3
