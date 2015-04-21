@@ -65,9 +65,10 @@ module Pod
       end
 
       status = Open3.popen3(bin, *command) do |i, o, e, t|
-        out_reader = Thread.new { while s = o.gets; stdout << s; end }
-        err_reader = Thread.new { while s = e.gets; stderr << s; end }
+        out_reader = Thread.new { stdout << o.read }
+        err_reader = Thread.new { stderr << e.read }
         i.close
+
         [out_reader, err_reader].each(&:join)
         t.value
       end
