@@ -51,7 +51,6 @@ module Pod
       bin = `which #{executable}`.strip
       raise Informative, "Unable to locate the executable `#{executable}`" if bin.empty?
 
-      require 'open3'
       require 'shellwords'
 
       command = command.map(&:to_s)
@@ -64,15 +63,8 @@ module Pod
         stdout, stderr = Indenter.new, Indenter.new
       end
 
-      status = Open3.popen3(bin, *command) do |i, o, e, t|
-        out_reader = Thread.new { stdout << o.read }
-        err_reader = Thread.new { stderr << e.read }
-        i.close
-
-        [out_reader, err_reader].each(&:join)
-        t.value
-      end
-      output  = stdout.join("\n") + stderr.join("\n")
+      status = popen3(bin, command, stdout, stderr)
+      output = stdout.join("\n") + stderr.join("\n")
       unless status.success?
         if raise_on_failure
           raise Informative, "#{full_command}\n\n#{output}"
@@ -81,6 +73,27 @@ module Pod
         end
       end
       output
+    end
+
+    private
+
+    def self.popen3(bin, command, stdout, stderr)
+      require 'open3'
+      Open3.popen3(bin, *command) do |i, o, e, t|
+        out_reader = Thread.new { while s = o.gets; stdout << s; end }
+        err_reader = Thread.new { while s = e.gets; stderr << s; end }
+
+        i.close
+
+        run_readers = lambda do
+          [out_reader, err_reader].each do |reader|
+            reader.run if reader.alive?
+          end
+        end
+
+        run_readers.call
+        t.value.tap { run_readers.call }
+      end
     end
 
     #-------------------------------------------------------------------------#
